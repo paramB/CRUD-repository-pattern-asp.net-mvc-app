@@ -48,6 +48,7 @@ function CustomerViewModel() {
             }
         });
     }
+
     //Reset Modal
     ResetModal = function () {
         CustomerData(new Customer(newCus));
@@ -55,6 +56,7 @@ function CustomerViewModel() {
         $('#createBtn').show();
         $('#updateBtn').hide();
     };
+
     //Add New Customer
     AddCustomer = function () {
         var data = ko.toJSON(CustomerData);
