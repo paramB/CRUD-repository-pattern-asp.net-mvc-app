@@ -58,7 +58,7 @@ function ProductViewModel() {
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
             success: function (result) {
-                $('#myModal').modal('hide');
+                $('#myModal').modal('hide');         
                 location.reload();
             },
             error: function (errormessage) {
@@ -89,6 +89,7 @@ function ProductViewModel() {
             dataType: 'json',
             success: function (result) {
                 $('#myModal').modal('hide');
+                alert("Product updated successfully");
                 location.reload();
             },
             error: function (errormessage) {
@@ -99,7 +100,7 @@ function ProductViewModel() {
 
     //Delete Product Record
     DeleteProduct = function (data) {
-        if (confirm('Are you sure to delete this record')) {
+        if (confirm('Are you sure to delete this record?')) {
             var id = data.Id;
             $.ajax({
                 type: 'POST',
@@ -107,8 +108,9 @@ function ProductViewModel() {
                 contentType: 'application/json; charset=utf-8',
                 success: function (data) {
                     Products.remove(data);
-                    alert("Record Deleted Successfully.");
+                    
                     location.reload();
+                    alert("Record deleted successfully");
                 },
                 error: function (errormessage) {
                     alert(errormessage.responseText);

@@ -98,6 +98,7 @@ function CustomerViewModel() {
             dataType: 'json',
             success: function (result) {
                 $('#myModal').modal('hide');
+                alert("Customer updated successfully");
                 location.reload();
             },
             error: function (errormessage) {
@@ -108,7 +109,7 @@ function CustomerViewModel() {
 
     //Delete Customer Record
     DeleteCustomer = function (data) {
-        if (confirm('Are you sure to delete this record')) {
+        if (confirm('Are you sure to delete this record?')) {
             var id = data.Id;
             $.ajax({
                 type: 'POST',
@@ -116,7 +117,7 @@ function CustomerViewModel() {
                 contentType: 'application/json; charset=utf-8',
                 success: function (data) {
                     Customers.remove(data);
-                    alert("Record Deleted Successfully.");
+                    alert("Record deleted successfully");
                     location.reload();
                 },
                 error: function (errormessage) {

@@ -98,7 +98,6 @@ function SaleViewModel() {
             contentType: "application/json",
             dataType: 'json',
             success: function (result) {
-                alert("Sale Added Successfully");
                 location.reload();
             },
             error: function (errormessage) {
@@ -123,7 +122,7 @@ function SaleViewModel() {
         self.SelectedProduct(prod);
         self.SelectedStore(store);
         $('#myModal').modal('show');
-        $('#modalTitle').html('Edit Customer');
+        $('#modalTitle').html('Edit Sale');
         $('#createBtn').hide();
         $('#updateBtn').show();
     };
@@ -145,6 +144,7 @@ function SaleViewModel() {
             dataType: 'json',
             success: function (result) {
                 $('#myModal').modal('hide');
+                alert("Sale updated successfully");
                 location.reload();
             },
             error: function (errormessage) {
@@ -162,6 +162,7 @@ function SaleViewModel() {
                 url: '/ProductSold/DeleteSale/' + id,
                 data: 'json',
                 success: function (data) {
+                    alert("Record deleted successfully");
                     location.reload();
                 },
                 error: function (errormessage) {
