@@ -1,17 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using OnBoardingTaskV3.Models;
-using System.Data.Entity;
+using OnBoardingTaskV3.DAL;
 
 namespace OnBoardingTaskV3.Controllers
 {
     public class ProductController : Controller
     {
-        StoreManagementEntities db = new StoreManagementEntities();
-        // GET: Product
+        private IUnitOfWork unitOfWork;
+
+        public ProductController(IUnitOfWork _unitOfWork)
+        {
+            unitOfWork = _unitOfWork;
+        }
+
         public ActionResult Index()
         {
             return View();
@@ -19,32 +20,29 @@ namespace OnBoardingTaskV3.Controllers
 
         public JsonResult GetProductList()
         {
-            var pro = db.Products.Select(x => new
-            {
-                Id = x.Id,
-                PName = x.Name,
-                Price = x.Price
-            }).ToList();
+            var pro = unitOfWork.ProdRepo.GetAllRecords();
             return Json(pro, JsonRequestBehavior.AllowGet);
         }
 
         public JsonResult AddProduct(Product pro)
         {
-            db.Products.Add(pro);
-            return Json(db.SaveChanges());
+            var product = unitOfWork.ProdRepo.AddRecord(pro);
+            unitOfWork.Save();
+            return Json(product, JsonRequestBehavior.AllowGet);
         }
 
         public JsonResult UpdateProduct(Product pro)
         {
-            db.Entry(pro).State = EntityState.Modified;
-            return Json(db.SaveChanges());
+            unitOfWork.ProdRepo.UpdateRecord(pro);
+            unitOfWork.Save();
+            return Json("Product updated successfully", JsonRequestBehavior.AllowGet);
         }
 
         public JsonResult DeleteProduct(int Id)
         {
-            Product pro = db.Products.Find(Id);
-            db.Products.Remove(pro);
-            return Json(db.SaveChanges());
+            var product = unitOfWork.ProdRepo.DeleteRecord(Id);
+            unitOfWork.Save();
+            return Json(product, JsonRequestBehavior.AllowGet);
         }
     }
 }

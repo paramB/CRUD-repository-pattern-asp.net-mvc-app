@@ -1,33 +1,34 @@
-﻿@model OnBoardingTaskV3.Models.Product
+﻿
+@model OnBoardingTaskV3.Models.Store
 
 @{
     ViewBag.Title = "Index";
 }
 <h2></h2>
 <p>
-    <button type="button" id="btnAddProduct" class="btn btn-success" data-toggle="modal" data-target="#myModal" data-bind="click: ResetModal">Add Product</button>
+    <button type="button" id="btnAddStore" class="btn btn-success" data-toggle="modal" data-target="#myModal" data-bind="click: ResetModal">Add Store</button>
 </p>
 <table class="table">
     <thead>
         <tr>
-            <th>Product Name</th>
-            <th>Price</th>            
+            <th>Store Name</th>
+            <th>Address</th>
             <th>Action</th>
         </tr>
     </thead>
-    <tbody data-bind="foreach: Products">
+    <tbody data-bind="foreach: Stores">
         <tr>
             <td data-bind="text: Name"></td>
-            <td data-bind="text: Price"></td>
+            <td data-bind="text: Address"></td>
             <td>
                 <button class="btn btn-success" data-bind="click: ShowEditModal">Edit</button>
-                <button class="btn btn-danger" data-bind="click: DeleteProduct">Delete</button>
+                <button class="btn btn-danger" data-bind="click: DeleteStore">Delete</button>
             </td>
         </tr>
     </tbody>
 </table>
 <div class="modal fade" id="myModal" data-keyboard="false" data-backdrop="static" tabindex="-1" role="dialog">
-    <div class="modal-dialog" data-bind="with : ProductData">
+    <div class="modal-dialog" data-bind="with : StoreData">
         <div class="modal-content">
             <div class="modal-header">
                 <button class="close" data-dismiss="modal">&times;</button>
@@ -39,16 +40,16 @@
                         <input class="form-control" type="text" data-bind="text : Id, visible: false" />
                     </div>
                     <div class="form-group">
-                        <label for="Name">Product Name</label>
+                        <label for="Name">Store Name</label>
                         <input class="form-control" type="text" data-bind="value : Name, valueUpdate : 'afterkeydown'" />
                     </div>
                     <div class="form-group">
-                        <label for="Price">Price</label>
-                        <input class="form-control" type="text" data-bind="value : Price, valueUpdate : 'afterkeydown'" />
+                        <label for="Address">Address</label>
+                        <input class="form-control" type="text" data-bind="value : Address, valueUpdate : 'afterkeydown'" />
                     </div>
                     <div class="modal-footer">
-                        <button typ="button" class="btn btn-success" id="createBtn" data-bind="click: AddProduct, enable : IsValid">Create</button>
-                        <button type="button" class="btn btn-success" id="updateBtn" data-bind="click: UpdateProduct, enable : IsValid">Update</button>
+                        <button typ="button" class="btn btn-success" id="createBtn" data-bind="click: AddStore, enable : IsValid">Create</button>
+                        <button type="button" class="btn btn-success" id="updateBtn" data-bind="click: UpdateStore, enable : IsValid">Update</button>
                         <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                     </div>
                 </form>
@@ -61,5 +62,5 @@
     <script src="~/Scripts/knockout-3.4.2.js"></script>
     <script src="~/Scripts/knockout.validation.min.js"></script>
     <script src="~/Scripts/knockout.mapping-latest.js"></script>
-    <script src="~/Scripts/KoProduct.js"></script>
+    <script src="~/Scripts/KoStore.js"></script>
 }

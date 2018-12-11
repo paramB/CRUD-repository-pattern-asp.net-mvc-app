@@ -1,19 +1,18 @@
 ﻿var newSale = { };
 
-//observables for add new sale
+/*observables for add new sale*/
 function Sale(data) {
     var self = this;
     self.Id = ko.observable(data.Id);
-    self.Customer = ko.observable(data.Customer);
+    self.CustomerName = ko.observable(data.Customer);
     self.CustomerId = ko.observable(data.CustomerId);
-    self.Product = ko.observable(data.Product);
+    self.ProductName = ko.observable(data.Product);
     self.ProductId = ko.observable(data.ProductId);
-    self.Store = ko.observable(data.Store);
+    self.StoreName = ko.observable(data.Store);
     self.StoreId = ko.observable(data.StoreId);
-    self.DateSold = ko.observable(moment(data.DateSold).format('YYYY-MM-DD')); //format date using moment().format('YYYY-MM-DD');
+    self.DateSold = ko.observable(moment(data.DateSold).format('YYYY-MM-DD')); /*format date using moment().format('YYYY-MM-DD');*/
 }
 
-//View Model
 function SaleViewModel() {
     var self = this;
     self.AvailableCustomers = ko.observableArray();
@@ -22,8 +21,8 @@ function SaleViewModel() {
     self.SelectedProduct = ko.observable();
     self.AvailableStores = ko.observableArray();
     self.SelectedStore = ko.observable();
-    self.ProductSoldData = ko.observable(); // Array contains the products sold data to add/edit
-    self.ProductSolds = ko.observableArray(); //Array Contains the list of products sold
+    self.ProductSoldData = ko.observable(); /*Array contains the products sold data to add/edit*/
+    self.ProductSolds = ko.observableArray(); /*Array Contains the list of products sold*/
 
     GetAllSales();
     GetAllCustomers();
@@ -65,17 +64,18 @@ function SaleViewModel() {
             method: "GET",
             url: "/ProductSold/GetSalesList",
             contentType: "application/json",
-            success: function (response) {
-                response.forEach(function (item) {
-                    self.ProductSolds.push(new Sale(item));
-                });
+            success: function (response) {                
+                response.forEach(function (item) {                  
+                    var data = ko.toJS(item);                    
+                    self.ProductSolds.push(new Sale(data));
+                });                
             },
             error: function (errormessage) {
                 alert(errormessage.responseText);
             }
         });
     }
-    //Reset Modal
+    /*Reset Modal*/
      self.ResetModal = function () {
         self.ProductSoldData(new Sale(newSale));
         $('#saledate').val('');
@@ -83,13 +83,13 @@ function SaleViewModel() {
         $('#updateBtn').hide();
      };
 
-    //Add New Sale
+    /*Add New Sale*/
      self.AddSale = function () {
          var data = {
              CustomerId: self.SelectedCustomer().Id,
              ProductId: self.SelectedProduct().Id,
              StoreId: self.SelectedStore().Id,
-             DateSold: $("#saledate").val(),
+             DateSold: $("#saledate").val()
          };
         $.ajax({
             type: "POST",
@@ -97,7 +97,7 @@ function SaleViewModel() {
             data: ko.toJSON(data),
             contentType: "application/json",
             dataType: 'json',
-            success: function (result) {
+            success: function () {                
                 location.reload();
             },
             error: function (errormessage) {
@@ -106,17 +106,17 @@ function SaleViewModel() {
         });
     };
 
-    //Show data in modal to edit
+    /*Show data in modal to edit*/
     self.ShowEditModal = function (data) {
         self.ProductSoldData(data);
         var cus = ko.utils.arrayFirst(self.AvailableCustomers(), function (item) {
-            return item.Id == data.CustomerId();
+            return item.Id === data.CustomerId();
         });
         var prod = ko.utils.arrayFirst(self.AvailableProducts(), function (item) {
-            return item.Id == data.ProductId();
+            return item.Id === data.ProductId();
         });
         var store = ko.utils.arrayFirst(self.AvailableStores(), function (item) {
-            return item.Id == data.StoreId();
+            return item.Id === data.StoreId();
         });
         self.SelectedCustomer(cus);
         self.SelectedProduct(prod);
@@ -127,25 +127,24 @@ function SaleViewModel() {
         $('#updateBtn').show();
     };
 
-    //Update Sale Record
+    /*Update Sale Record*/
     self.UpdateSale = function (data) {        
         var Id = data.Id();
-        var data = {
+        var updateData = {
             CustomerId: self.SelectedCustomer().Id,
             ProductId: self.SelectedProduct().Id,
             StoreId: self.SelectedStore().Id,
-            DateSold: $("#saledate").val(),
+            DateSold: $("#saledate").val()
         };        
         $.ajax({
             method: 'POST',
             url: '/ProductSold/UpdateSale/' + Id,
             contentType: 'application/json; charset=utf-8',
-            data: ko.toJSON(data),
+            data: ko.toJSON(updateData),
             dataType: 'json',
-            success: function (result) {
-                $('#myModal').modal('hide');
-                alert("Sale updated successfully");
-                location.reload();
+            success: function () {
+                //GetAllSales();
+                location.reload();                                
             },
             error: function (errormessage) {
                 alert(errormessage.responseText);
@@ -153,7 +152,7 @@ function SaleViewModel() {
         });
     };
 
-    //Delete Sale Record
+    /*Delete Sale Record*/
     self.DeleteSale = function (data) {
         var id = data.Id();
         if (confirm('Are you sure to delete this record?')) {
@@ -162,7 +161,8 @@ function SaleViewModel() {
                 url: '/ProductSold/DeleteSale/' + id,
                 data: 'json',
                 success: function (data) {
-                    alert("Record deleted successfully");
+                    self.ProductSolds.remove(data);
+                    //GetAllSales();
                     location.reload();
                 },
                 error: function (errormessage) {
@@ -170,11 +170,10 @@ function SaleViewModel() {
                 }
             });
         }
-    }
+    };
 }
 
 $(document).ready(function () {
     var sales = new SaleViewModel();
-    ko.applyBindings(sales);
-    
+    ko.applyBindings(sales);    
 });

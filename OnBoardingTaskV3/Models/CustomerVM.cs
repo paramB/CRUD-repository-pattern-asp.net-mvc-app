@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.ComponentModel.DataAnnotations;
+using OnBoardingTaskV3.DAL;
 
 namespace OnBoardingTaskV3.Models
 {

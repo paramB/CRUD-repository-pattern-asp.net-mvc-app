@@ -1,16 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Linq;
 using System.Web.Mvc;
+using OnBoardingTaskV3.DAL;
 using OnBoardingTaskV3.Models;
 
 namespace OnBoardingTaskV3.Controllers
 {
     public class StoreController : Controller
     {
-        StoreManagementEntities db = new StoreManagementEntities();
-        // GET: Store
+        private IUnitOfWork unitOfWork;
+
+        public StoreController(IUnitOfWork _unitOfWork)
+        {
+            unitOfWork = _unitOfWork;
+        }
+
         public ActionResult Index()
         {
             return View();
@@ -18,12 +21,28 @@ namespace OnBoardingTaskV3.Controllers
 
         public JsonResult GetStoreList()
         {
-            var store = db.Stores.Select(x => new
-            {
-                Id = x.Id,
-                SName = x.Name,
-                SAddress = x.Address
-            }).ToList();
+            var storeList = unitOfWork.StoreRepo.GetAllRecords();
+            return Json(storeList, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult AddStore(Store store)
+        {
+            var st = unitOfWork.StoreRepo.AddRecord(store);
+            unitOfWork.Save();
+            return Json(st, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult UpdateStore(Store store)
+        {
+            unitOfWork.StoreRepo.UpdateRecord(store);
+            unitOfWork.Save();
+            return Json("Store updated successfully", JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult DeleteStore(int Id)
+        {
+            var store = unitOfWork.StoreRepo.DeleteRecord(Id);
+            unitOfWork.Save();
             return Json(store, JsonRequestBehavior.AllowGet);
         }
     }

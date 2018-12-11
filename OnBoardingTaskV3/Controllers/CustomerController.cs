@@ -1,17 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using OnBoardingTaskV3.DAL;
 using OnBoardingTaskV3.Models;
-using System.Data.Entity;
+using System.Web.Mvc;
 
 namespace OnBoardingTaskV3.Controllers
 {
     public class CustomerController : Controller
     {
-        StoreManagementEntities db = new StoreManagementEntities();
-        // GET: Customer
+        private IUnitOfWork unitOfWork;
+
+        public CustomerController(IUnitOfWork _unitOfWork)
+        {
+            unitOfWork = _unitOfWork;
+        }
+
         public ActionResult Index()
         {
             return View();
@@ -19,34 +20,28 @@ namespace OnBoardingTaskV3.Controllers
 
         public JsonResult GetCustomerList()
         {
-            // using LAMBDA syntax
-            var customers = db.Customers.Select(x => new
-            {
-                Id = x.Id,
-                Name = x.Name,
-                Age = x.Age,
-                Address = x.Address,
-            }).ToList();
-            return Json(customers, JsonRequestBehavior.AllowGet);
+            var custList = unitOfWork.CustRepo.GetAllRecords();            
+            return Json(custList, JsonRequestBehavior.AllowGet);
         }
 
         public JsonResult AddCustomer(Customer cust)
-        {
-            db.Customers.Add(cust);
-            return Json(db.SaveChanges());
+        {            
+            var customer = unitOfWork.CustRepo.AddRecord(cust);
+            unitOfWork.Save();
+            return Json(customer, JsonRequestBehavior.AllowGet);
         }
-
-        public JsonResult UpdateCustomer(Customer customer)
+        
+        public JsonResult UpdateCustomer(Customer cust)
         {
-            db.Entry(customer).State = EntityState.Modified;
-            return Json(db.SaveChanges());
+            unitOfWork.CustRepo.UpdateRecord(cust);            
+            return Json(unitOfWork.Save());
         }
 
         public JsonResult DeleteCustomer(int Id)
         {
-            Customer cust = db.Customers.Find(Id);
-            db.Customers.Remove(cust);
-            return Json(db.SaveChanges());
+            var customer = unitOfWork.CustRepo.DeleteRecord(Id);
+            unitOfWork.Save();
+            return Json(customer, JsonRequestBehavior.AllowGet);
         }
     }
 }

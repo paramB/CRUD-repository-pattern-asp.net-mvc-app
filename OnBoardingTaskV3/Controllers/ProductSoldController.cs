@@ -1,53 +1,46 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using OnBoardingTaskV3.Models;
-using System.Data.Entity;
+using OnBoardingTaskV3.DAL;
 
 namespace OnBoardingTaskV3.Controllers
 {
     public class ProductSoldController : Controller
     {
-        StoreManagementEntities db = new StoreManagementEntities();
-        // GET: KoProductSold
+        private IUnitOfWork unitOfWork;
+
+        public ProductSoldController(IUnitOfWork _unitOfWork)
+        {
+            unitOfWork = _unitOfWork;
+        }
+        
         public ActionResult Index()
         {
             return View();
         }
+
         public JsonResult GetSalesList()
         {
-            //using Lambda syntax
-            var productsold = db.ProductSolds.Include(s => s.Customer).Include(s => s.Product).Include(s => s.Store).Select(x => new
-            {
-                Id = x.Id,
-                Product = x.Product.Name,
-                ProductId = x.ProductId,
-                Customer = x.Customer.Name,
-                CustomerId = x.CustomerId,
-                Store = x.Store.Name,
-                StoreId = x.StoreId,
-                DateSold = x.DateSold,
-            }).ToList();
-            return Json(productsold, JsonRequestBehavior.AllowGet);
+            var saleList = unitOfWork.SaleRepo.GetAllRecords();
+            return Json(saleList, JsonRequestBehavior.AllowGet);
         }
 
         public JsonResult AddSale(ProductSold psold)
-        {
-            db.ProductSolds.Add(psold);
-            return Json(db.SaveChanges());
+        {               
+            unitOfWork.SaleRepo.AddRecord(psold);          
+            return Json(unitOfWork.Save());
         }
+
         public JsonResult UpdateSale(ProductSold psold)
         {
-            db.Entry(psold).State = EntityState.Modified;
-            return Json(db.SaveChanges());
+            unitOfWork.SaleRepo.UpdateRecord(psold);         
+            return Json(unitOfWork.Save());
         }
+
         public JsonResult DeleteSale(int Id)
         {
-            ProductSold sale = db.ProductSolds.Find(Id);
-            db.ProductSolds.Remove(sale);
-            return Json(db.SaveChanges());
+            var del = unitOfWork.SaleRepo.DeleteRecord(Id);
+            unitOfWork.Save();
+            return Json(del, JsonRequestBehavior.AllowGet);
         }
     }
 }

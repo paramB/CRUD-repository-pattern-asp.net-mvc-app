@@ -1,6 +1,6 @@
 ﻿var newCus = { Name: '', Age: '', Address: '' };
 function Customer(data) {
-    //Observables bound to model properties
+    /* Observables bound to model properties */
     this.Id = ko.observable(data.Id);
     this.Name = ko.observable(data.Name).extend({
         required: true,
@@ -25,22 +25,21 @@ function Customer(data) {
     ModelErrors = ko.validation.group(this);
     IsValid = ko.computed(function () {
         ModelErrors.showAllMessages();
-        return ModelErrors().length == 0;
+        return ModelErrors().length === 0;
     });
 }
 
-//View Model
 function CustomerViewModel() {
-    Customers = ko.observableArray(); // Array to contain the list of customers
-    CustomerData = ko.observable(); // Observable to bind customer data for add/edit operation
+    Customers = ko.observableArray(); /*Array to contain the list of customers*/
+    CustomerData = ko.observable(); /*Observable to bind customer data for add/edit operation*/
     
     GetAllCustomers();
-    function GetAllCustomers(){
+    function GetAllCustomers() {        
         $.ajax({
             method: "GET",
             url: "/Customer/GetCustomerList",
             contentType: "application/json;charset=utf-8",
-            success: function (result) {
+            success: function (result) {                
                 Customers(result);
             },
             error: function (errormessage) {
@@ -49,7 +48,7 @@ function CustomerViewModel() {
         });
     }
 
-    //Reset Modal
+    /*Reset Modal*/
     ResetModal = function () {
         CustomerData(new Customer(newCus));
         $('#modalTitle').html('Add Customer');
@@ -57,7 +56,7 @@ function CustomerViewModel() {
         $('#updateBtn').hide();
     };
 
-    //Add New Customer
+    /*Add New Customer*/
     AddCustomer = function () {
         var data = ko.toJSON(CustomerData);
         $.ajax({
@@ -66,9 +65,9 @@ function CustomerViewModel() {
             data: data,
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
-            success: function (result) {
+            success: function (result) {                
+                Customers.push(result);
                 $('#myModal').modal('hide');
-                location.reload();
             },
             error: function (errormessage) {
                 alert(errormessage.responseText);
@@ -76,9 +75,9 @@ function CustomerViewModel() {
         });
     };
 
-    //Show data in modal to edit
+    /*Show data in modal for edit operation*/
     ShowEditModal = function (data) {
-        //mapped data using ko.mapping plugin
+        /*mapped data using ko.mapping plugin*/
         var selected = ko.mapping.toJS(data);
         CustomerData(new Customer(selected));
         $('#myModal').modal('show');
@@ -87,7 +86,7 @@ function CustomerViewModel() {
         $('#updateBtn').show();
     };
 
-    //Update Customer Record
+    /*Update Customer Record*/
     UpdateCustomer = function () {
         var data = ko.toJSON(CustomerData);
         $.ajax({
@@ -97,9 +96,8 @@ function CustomerViewModel() {
             data: data,
             dataType: 'json',
             success: function (result) {
+                GetAllCustomers();                
                 $('#myModal').modal('hide');
-                alert("Customer updated successfully");
-                location.reload();
             },
             error: function (errormessage) {
                 alert(errormessage.responseText);
@@ -107,9 +105,9 @@ function CustomerViewModel() {
         });
     };
 
-    //Delete Customer Record
+    /*Delete Customer Record*/
     DeleteCustomer = function (data) {
-        if (confirm('Are you sure to delete this record?')) {
+        if (confirm('Are you sure to delete this customer?')) {
             var id = data.Id;
             $.ajax({
                 type: 'POST',
@@ -117,17 +115,16 @@ function CustomerViewModel() {
                 contentType: 'application/json; charset=utf-8',
                 success: function (data) {
                     Customers.remove(data);
-                    alert("Record deleted successfully");
-                    location.reload();
+                    GetAllCustomers();
                 },
                 error: function (errormessage) {
                     alert(errormessage.responseText);
                 }
             });
         }
-    }
+    };
 }
-$(document).ready(function(){
+$(document).ready(function () {    
     var CustomerVM = new CustomerViewModel();
     ko.applyBindings(CustomerVM);
 });

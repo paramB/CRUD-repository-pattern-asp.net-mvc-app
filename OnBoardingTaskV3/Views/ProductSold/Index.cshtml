@@ -20,9 +20,9 @@
     </thead>
     <tbody data-bind="foreach: ProductSolds">
         <tr>
-            <td data-bind="text: Customer"></td>
-            <td data-bind="text: Product"></td>
-            <td data-bind="text: Store"></td>
+            <td data-bind="text: CustomerName"></td>
+            <td data-bind="text: ProductName"></td>
+            <td data-bind="text: StoreName"></td>
             <td data-bind="text: DateSold"></td>
             <td>
                 <button class="btn btn-success" data-bind="click: $parent.ShowEditModal"> Edit </button>
@@ -49,11 +49,11 @@
                     </div>
                     <div class="form-group">
                         <label>Select Product</label>
-                        <select class="form-control" data-bind="options : $parent.AvailableProducts, optionsText : 'PName', value : $parent.SelectedProduct"></select>
+                        <select class="form-control" data-bind="options : $parent.AvailableProducts, optionsText : 'Name', value : $parent.SelectedProduct"></select>
                     </div>
                     <div class="form-group">
                         <label>Select Store</label>
-                        <select class="form-control" data-bind="options : $parent.AvailableStores, optionsText : 'SName', value : $parent.SelectedStore"></select>
+                        <select class="form-control" data-bind="options : $parent.AvailableStores, optionsText : 'Name', value : $parent.SelectedStore"></select>
                     </div>
                     <div class="form-group">
                         <label>Date of Sale</label>

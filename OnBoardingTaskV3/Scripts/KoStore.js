@@ -1,5 +1,6 @@
-﻿var newPro = { Name: '', Price: ''};
-function Product(data) {
+﻿var newStore = { Name: '', Address: '' };
+
+function Store(data) {
     /*observables bound to model properties*/
     this.Id = ko.observable(data.Id);
     this.Name = ko.observable(data.Name).extend({
@@ -7,12 +8,8 @@ function Product(data) {
         minLength: 5,
         maxLength: 15
     });
-    this.Price = ko.observable(data.Price).extend({
-        required: true,
-        pattern: {
-            message: "Please enter appropriate amount.",
-            params: /^(\d*\.)?\d+$/
-        }
+    this.Address = ko.observable(data.Address).extend({
+        required: true        
     });
 
     ModelErrors = ko.validation.group(this);
@@ -22,43 +19,43 @@ function Product(data) {
     });
 }
 
-function ProductViewModel() {
-    Products = ko.observableArray(); /*Array to contain the list of products*/
-    ProductData = ko.observable(); /*Observable to bind product data for add/edit operation*/
+function StoreViewModel() {
+    Stores = ko.observableArray(); /*Array to contain the list of stores*/
+    StoreData = ko.observable(); /*Observable to bind store data for add/edit operation*/
 
-    GetAllProducts();
-    function GetAllProducts() {
+    GetAllStores();
+    function GetAllStores() {
         $.ajax({
             method: "GET",
-            url: "/Product/GetProductList",
+            url: "/Store/GetStoreList",
             contentType: "application/json;charset=utf-8",
-            success: function (result) {                
-                Products(result);
+            success: function (result) {
+                Stores(result);
             },
             error: function (errormessage) {
                 alert(errormessage.responseText);
             }
         });
     }
-    /*reset modal*/
+    /*reset Modal*/
     ResetModal = function () {
-        ProductData(new Product(newPro));
-        $('#modalTitle').html('Add Product');
+        StoreData(new Store(newStore));
+        $('#modalTitle').html('Add Store');
         $('#createBtn').show();
         $('#updateBtn').hide();
     };
 
-    /*Add New Product*/
-    AddProduct = function () {
-        var data = ko.toJSON(ProductData);
+    /*add new store*/
+    AddStore = function () {
+        var data = ko.toJSON(StoreData);
         $.ajax({
             type: "POST",
-            url: "/Product/AddProduct",
+            url: "/Store/AddStore",
             data: data,
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
             success: function (result) {
-                Products.push(result);
+                Stores.push(result);
                 $('#myModal').modal('hide');
             },
             error: function (errormessage) {
@@ -67,29 +64,29 @@ function ProductViewModel() {
         });
     };
 
-    /*Show data in modal to edit*/
-    ShowEditModal = function (data) {        
+    /*show data in modal to edit*/
+    ShowEditModal = function (data) {
         /*mapped data using ko.mapping plugin*/
-        var selected = ko.mapping.toJS(data);        
-        ProductData(new Product(selected));        
+        var selected = ko.mapping.toJS(data);
+        StoreData(new Store(selected));
         $('#myModal').modal('show');
-        $('#modalTitle').html('Edit Product');
+        $('#modalTitle').html('Edit Store');
         $('#createBtn').hide();
         $('#updateBtn').show();
     };
 
-    /*Update Product Record*/
-    UpdateProduct = function () {
-        var data = ko.toJSON(ProductData);
+    /*update store record*/
+    UpdateStore = function () {
+        var data = ko.toJSON(StoreData);
         $.ajax({
             method: 'POST',
-            url: '/Product/UpdateProduct',
+            url: '/Store/UpdateStore',
             contentType: 'application/json; charset=utf-8',
             data: data,
             dataType: 'json',
-            success: function (result) {                
-                GetAllProducts();
-                $('#myModal').modal('hide');               
+            success: function (result) {
+                GetAllStores();
+                $('#myModal').modal('hide');
             },
             error: function (errormessage) {
                 alert(errormessage.responseText);
@@ -97,17 +94,17 @@ function ProductViewModel() {
         });
     };
 
-    /*Delete Product Record*/
-    DeleteProduct = function (data) {
+    /*delete store record*/
+    DeleteStore = function (data) {
         if (confirm('Are you sure to delete this record?')) {
             var id = data.Id;
             $.ajax({
                 type: 'POST',
-                url: '/Product/DeleteProduct/' + id,
+                url: '/Store/DeleteStore/' + id,
                 contentType: 'application/json; charset=utf-8',
                 success: function (data) {
-                    Products.remove(data);
-                    GetAllProducts();                    
+                    Stores.remove(data);
+                    GetAllStores();
                 },
                 error: function (errormessage) {
                     alert(errormessage.responseText);
@@ -117,8 +114,8 @@ function ProductViewModel() {
     }
 }
 $(document).ready(function () {
-    var ProductVM = new ProductViewModel();
-    ko.applyBindings(ProductVM);
+    var StoreVM = new StoreViewModel();
+    ko.applyBindings(StoreVM);
 });
 
 
